@@ -1,32 +1,331 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dental Magic Lab</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مختبر الأسنان السحري | Magic Dental Lab</title>
+    <style>
+        /* المتغيرات الأساسية للألوان والسمات */
+        :root {
+            --primary-blue: #007AFF; /* أزرق Apple */
+            --bg-gradient: linear-gradient(135deg, #e0eafc, #cfdef3);
+            --glass-bg: rgba(255, 255, 255, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --text-color: #1c1c1e;
+            --input-bg: rgba(255, 255, 255, 0.6);
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            --success-color: #34c759;
+        }
 
-<link rel="stylesheet" href="style.css">
+        /* الوضع الداكن */
+        [data-theme="dark"] {
+            --bg-gradient: linear-gradient(135deg, #121212, #2c3e50);
+            --glass-bg: rgba(0, 0, 0, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-color: #f5f5f7;
+            --input-bg: rgba(0, 0, 0, 0.5);
+            --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+        }
+
+        /* إعادة ضبط وتنسيق أساسي */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; transition: background-color 0.4s, color 0.4s, border-color 0.3s; }
+        body { background: var(--bg-gradient); color: var(--text-color); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        
+        /* تأثير Glassmorphism */
+        .glass { background: var(--glass-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 20px; box-shadow: var(--shadow); }
+        
+        /* الرأس (Header) */
+        header { width: 100%; max-width: 800px; display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; margin-bottom: 30px; animation: fadeInDown 0.6s ease-out; }
+        .logo { font-size: 1.5rem; font-weight: bold; display: flex; align-items: center; gap: 10px; }
+        .controls { display: flex; gap: 15px; }
+        button.icon-btn { background: var(--input-bg); border: 1px solid var(--glass-border); border-radius: 50%; width: 45px; height: 45px; cursor: pointer; color: var(--text-color); font-size: 1.2rem; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        button.icon-btn:hover { transform: scale(1.1); }
+        
+        /* حاوية النموذج */
+        .form-container { width: 100%; max-width: 800px; padding: 30px; animation: fadeInUp 0.8s ease-out; position: relative; }
+        
+        /* حقول الإدخال */
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 500; font-size: 0.95rem; }
+        input, select, textarea { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--glass-border); background: var(--input-bg); color: var(--text-color); outline: none; font-size: 1rem; }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2); }
+        input[type="file"] { padding: 10px; }
+        
+        /* شبكة للأعمدة */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
+        
+        /* زر الإرسال */
+        .submit-btn { width: 100%; padding: 16px; background: var(--primary-blue); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+        .submit-btn:hover { background: #006ce0; transform: scale(1.02); }
+        .submit-btn:active { transform: scale(0.98); }
+        
+        /* تأثيرات التحميل والنجاح */
+        .loading-spinner { display: none; width: 24px; height: 24px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .is-loading .btn-text { display: none; }
+        .is-loading .loading-spinner { display: block; }
+        .success-msg { display: none; text-align: center; color: var(--success-color); font-weight: bold; margin-top: 15px; animation: fadeInUp 0.5s; font-size: 1.1rem; }
+        
+        /* حركات الظهور */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </head>
-
 <body>
 
-<div class="login-box">
+    <header class="glass">
+        <div class="logo">🦷 <span id="lbl_logo">مختبر الأسنان السحري</span></div>
+        <div class="controls">
+            <button class="icon-btn" id="themeToggle" title="تبديل الوضع">☀️</button>
+            <button class="icon-btn" id="langToggle" title="تبديل اللغة">EN</button>
+        </div>
+    </header>
 
-<img src="logo.png" class="logo">
+    <div class="form-container glass">
+        <form id="dentalForm">
+            <div class="grid-2">
+                <div class="form-group">
+                    <label id="lbl_name">الاسم الكامل</label>
+                    <input type="text" id="fullName" required>
+                </div>
+                <div class="form-group">
+                    <label id="lbl_email">البريد الإلكتروني</label>
+                    <input type="email" id="email" required>
+                </div>
+            </div>
+            
+            <div class="grid-2">
+                <div class="form-group">
+                    <label id="lbl_phone">رقم الهاتف</label>
+                    <input type="tel" id="phone" required>
+                </div>
+                <div class="form-group">
+                    <label id="lbl_doctor">اسم الطبيب</label>
+                    <input type="text" id="doctorName" required>
+                </div>
+            </div>
 
-<h1>Dental Magic Lab</h1>
+            <hr style="border:0; height:1px; background:var(--glass-border); margin:20px 0;">
 
-<h3>Patient Management System</h3>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label id="lbl_patient">اسم المريض</label>
+                    <input type="text" id="patientName" required>
+                </div>
+                <div class="form-group">
+                    <label id="lbl_workType">نوع العمل</label>
+                    <select id="workType" required>
+                        <option value="تلبيسة" id="opt_crown">تلبيسة</option>
+                        <option value="زراعة" id="opt_implant">زراعة</option>
+                        <option value="تقويم" id="opt_ortho">تقويم</option>
+                        <option value="عدسات" id="opt_veneers">عدسات</option>
+                        <option value="أخرى" id="opt_other">أخرى</option>
+                    </select>
+                </div>
+            </div>
 
-<input type="text" placeholder="اسم المستخدم">
+            <div class="grid-2">
+                <div class="form-group">
+                    <label id="lbl_priority">الأولوية</label>
+                    <select id="priority">
+                        <option value="عادية" id="opt_normal">عادية</option>
+                        <option value="مستعجلة" id="opt_urgent">مستعجلة</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label id="lbl_date">تاريخ التسليم</label>
+                    <input type="date" id="deliveryDate" required>
+                </div>
+            </div>
 
-<input type="password" placeholder="كلمة المرور">
+            <div class="form-group">
+                <label id="lbl_notes">الملاحظات</label>
+                <textarea id="notes" rows="3" placeholder="أضف أي ملاحظات إضافية هنا..."></textarea>
+            </div>
 
-<button>تسجيل الدخول</button>
+            <div class="form-group">
+                <label id="lbl_files">رفع الملفات (صور، PDF، أشعة)</label>
+                <input type="file" id="files" multiple accept="image/*,.pdf">
+            </div>
 
-</div>
+            <button type="submit" class="submit-btn" id="submitBtn">
+                <span class="btn-text" id="lbl_submit">إرسال الطلب</span>
+                <div class="loading-spinner"></div>
+            </button>
+            <div id="successMessage" class="success-msg">✅ تم إرسال الطلب بنجاح!</div>
+        </form>
+    </div>
 
-<script src="app.js"></script>
+    <script>
+        // قاموس الترجمة
+        const translations = {
+            ar: {
+                logo: "مختبر الأسنان السحري", name: "الاسم الكامل", email: "البريد الإلكتروني", phone: "رقم الهاتف",
+                doctor: "اسم الطبيب", patient: "اسم المريض", workType: "نوع العمل",
+                crown: "تلبيسة", implant: "زراعة", ortho: "تقويم", veneers: "عدسات", other: "أخرى",
+                priority: "الأولوية", normal: "عادية", urgent: "مستعجلة", date: "تاريخ التسليم",
+                notes: "الملاحظات", files: "رفع الملفات (صور، PDF، أشعة)", submit: "إرسال الطلب",
+                success: "✅ تم إرسال الطلب بنجاح!"
+            },
+            en: {
+                logo: "Magic Dental Lab", name: "Full Name", email: "Email", phone: "Phone Number",
+                doctor: "Doctor Name", patient: "Patient Name", workType: "Work Type",
+                crown: "Crown", implant: "Implant", ortho: "Orthodontics", veneers: "Veneers", other: "Other",
+                priority: "Priority", normal: "Normal", urgent: "Urgent", date: "Delivery Date",
+                notes: "Notes", files: "Upload Files (Images, PDF, X-rays)", submit: "Submit Request",
+                success: "✅ Request submitted successfully!"
+            }
+        };
 
+        // استرجاع الإعدادات المحفوظة
+        let currentLang = localStorage.getItem('lang') || 'ar';
+        let currentTheme = localStorage.getItem('theme') || 'light';
+
+        // تهيئة الموقع عند الفتح
+        function init() {
+            setTheme(currentTheme);
+            setLang(currentLang);
+        }
+
+        // تبديل الوضع (الداكن/الفاتح)
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            setTheme(currentTheme);
+        });
+
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            document.getElementById('themeToggle').innerText = theme === 'light' ? '🌙' : '☀️';
+            localStorage.setItem('theme', theme);
+        }
+
+        // تبديل اللغة (عربي/إنجليزي)
+        document.getElementById('langToggle').addEventListener('click', () => {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            setLang(currentLang);
+        });
+
+        function setLang(lang) {
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+            document.getElementById('langToggle').innerText = lang === 'ar' ? 'EN' : 'عربي';
+            
+            // تطبيق النصوص
+            const t = translations[lang];
+            document.getElementById('lbl_logo').innerText = t.logo;
+            document.getElementById('lbl_name').innerText = t.name;
+            document.getElementById('lbl_email').innerText = t.email;
+            document.getElementById('lbl_phone').innerText = t.phone;
+            document.getElementById('lbl_doctor').innerText = t.doctor;
+            document.getElementById('lbl_patient').innerText = t.patient;
+            document.getElementById('lbl_workType').innerText = t.workType;
+            document.getElementById('opt_crown').innerText = t.crown;
+            document.getElementById('opt_implant').innerText = t.implant;
+            document.getElementById('opt_ortho').innerText = t.ortho;
+            document.getElementById('opt_veneers').innerText = t.veneers;
+            document.getElementById('opt_other').innerText = t.other;
+            document.getElementById('lbl_priority').innerText = t.priority;
+            document.getElementById('opt_normal').innerText = t.normal;
+            document.getElementById('opt_urgent').innerText = t.urgent;
+            document.getElementById('lbl_date').innerText = t.date;
+            document.getElementById('lbl_notes').innerText = t.notes;
+            document.getElementById('lbl_files').innerText = t.files;
+            document.getElementById('lbl_submit').innerText = t.submit;
+            document.getElementById('successMessage').innerText = t.success;
+
+            // تحديث قيم الخيارات المخفية لإرسالها للـ Backend باللغة الصحيحة
+            document.getElementById('opt_crown').value = t.crown;
+            document.getElementById('opt_implant').value = t.implant;
+            document.getElementById('opt_ortho').value = t.ortho;
+            document.getElementById('opt_veneers').value = t.veneers;
+            document.getElementById('opt_other').value = t.other;
+            document.getElementById('opt_normal').value = t.normal;
+            document.getElementById('opt_urgent').value = t.urgent;
+
+            localStorage.setItem('lang', lang);
+        }
+
+        // منطق إرسال النموذج (الربط مع Google Apps Script)
+        const form = document.getElementById('dentalForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const successMessage = document.getElementById('successMessage');
+
+        // الرابط مدمج هنا وجاهز للعمل
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw7ekNzCw3dBngMDXkus_zmtgwoLPcGURIujvZC3DsTra3scXZQCH7wQ9P39JfIsRzw/exec'; 
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            submitBtn.classList.add('is-loading');
+            successMessage.style.display = 'none';
+
+            // جمع البيانات
+            const formData = {
+                fullName: document.getElementById('fullName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                doctorName: document.getElementById('doctorName').value,
+                patientName: document.getElementById('patientName').value,
+                workType: document.getElementById('workType').value,
+                priority: document.getElementById('priority').value,
+                deliveryDate: document.getElementById('deliveryDate').value,
+                notes: document.getElementById('notes').value,
+                files: []
+            };
+
+            // معالجة الملفات المرفوعة وتحويلها إلى Base64
+            const fileInput = document.getElementById('files');
+            if (fileInput.files.length > 0) {
+                for(let file of fileInput.files){
+                   let base64 = await getBase64(file);
+                   formData.files.push({ 
+                       name: file.name, 
+                       mimeType: file.type, 
+                       data: base64.split(',')[1] 
+                   });
+                }
+            }
+
+            try {
+                if(GOOGLE_SCRIPT_URL === 'ضع_رابط_سكربت_جوجل_هنا') {
+                    // محاكاة الإرسال إذا لم يتم وضع الرابط بعد
+                    await new Promise(r => setTimeout(r, 1500)); 
+                    console.log("البيانات التي سيتم إرسالها:", formData);
+                    successMessage.style.display = 'block';
+                    form.reset();
+                } else {
+                    // إرسال فعلي للبيانات
+                    const response = await fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST',
+                        body: JSON.stringify(formData),
+                    });
+                    const result = await response.json();
+                    if(result.status === "success") {
+                        successMessage.style.display = 'block';
+                        form.reset();
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert(currentLang === 'ar' ? "حدث خطأ أثناء الإرسال. تأكد من اتصالك بالإنترنت." : "Error submitting. Check your connection.");
+            } finally {
+                submitBtn.classList.remove('is-loading');
+                setTimeout(() => successMessage.style.display = 'none', 5000); // إخفاء رسالة النجاح بعد 5 ثوان
+            }
+        });
+
+        // دالة مساعدة لتحويل الملفات إلى Base64 ليتمكن Google Apps Script من قراءتها
+        function getBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        // تشغيل الإعدادات المبدئية
+        init();
+    </script>
 </body>
 </html>
